@@ -1,15 +1,16 @@
 from nltk.tokenize import RegexpTokenizer
 from nltk import FreqDist
-from nltk import pos_tag
 from nltk.tag import StanfordPOSTagger
+from nltk import word_tokenize
+import nltk
 import spacy
 
 
 nlp = spacy.load('es_core_news_sm')
 INPUT_FILE_PATH = 'elramoazul.txt'
 input_file = open(INPUT_FILE_PATH, encoding='utf8').read()
-JAR = '/Users/jgerman/Desktop/Models/stanford-postagger-full-2020-11-17/stanford-postagger.jar'
-TAGGER= '/Users/jgerman/Desktop/Models/stanford-postagger-full-2020-11-17/models/spanish-ud.tagger'
+JAR = '/home/german/Escritorio/Models/stanford-postagger-full-2020-11-17/stanford-postagger.jar'
+TAGGER= '/home/german/Escritorio/Models/stanford-postagger-full-2020-11-17/models/spanish-ud.tagger'
 
 # Tokenización
 input_file = input_file.lower()
@@ -36,7 +37,7 @@ unique_lemmas = list(set(lemmas))
 unique_lemmas_number = len(unique_lemmas)
 print("Número de lemmas diferentes en el texto:",unique_lemmas_number)
 
-# ¿Cuál es la diversidad léxica del texto dado? (relación de palabras únicas con respecto al número total de palabras)
+# 4.¿Cuál es la diversidad léxica del texto dado? (relación de palabras únicas con respecto al número total de palabras)
 def lexical_diversity(tokens):
     return len(set(tokens)) / len(tokens)
 
@@ -58,10 +59,40 @@ for sentence in sentences:
 print("Promedio de palabras por oración:",sum(words_per_sentence)/len(sentences))
 
 # 7.¿Cuál es la frecuencia de de sustantivos, adjetivos y verbos en el texto?
-pos_tagger = StanfordPOSTagger(TAGGER, JAR)
-for sentence in sentences:
-    tokens = tokenizer.tokenize(sentence)
-    pos = pos_tagger.tag(tokens)
-    print(pos)
-    
 
+# Etiquetador de Stanford #
+pos_tagger = StanfordPOSTagger(TAGGER, JAR)
+
+tokens = tokenizer.tokenize(input_file)
+pos = pos_tagger.tag(tokens)
+pos_tags = []
+for element in pos:
+    pos_tags.append(element[1])
+
+print("Frecuencia de sustantivos: {}".format(pos_tags.count('NOUN')))
+print("Frecuencia de adjetivos: {}".format(pos_tags.count('ADJ')))
+print("Frecuencia de verbos: {}".format(pos_tags.count('VERB')))
+    
+# Etiquetador de Spacy #
+pos_tags = []
+for token in tokens:
+    d = nlp(token)
+    for token in d:
+        pos_tags.append(token.pos_)
+
+print("Frecuencia de sustantivos: {}".format(pos_tags.count('NOUN')))
+print("Frecuencia de adjetivos: {}".format(pos_tags.count('ADJ')))
+print("Frecuencia de verbos: {}".format(pos_tags.count('VERB')))
+
+# 8.Hacer una gramática que analice las tres primeras oraciones.
+text = word_tokenize('Alice loves Bob')
+grammar = nltk.CFG.fromstring("""
+S -> NP VP
+VP -> V NP
+NP -> 'Alice' | 'Bob'
+V -> 'loves'
+""")
+parser = nltk.ChartParser(grammar)
+trees = parser.parse_all(text)
+for tree in trees:
+    print(tree)
