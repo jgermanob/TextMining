@@ -5,6 +5,7 @@ from nltk import word_tokenize
 import nltk
 import spacy
 
+"""
 
 nlp = spacy.load('es_core_news_sm')
 INPUT_FILE_PATH = 'elramoazul.txt'
@@ -84,15 +85,54 @@ print("Frecuencia de sustantivos: {}".format(pos_tags.count('NOUN')))
 print("Frecuencia de adjetivos: {}".format(pos_tags.count('ADJ')))
 print("Frecuencia de verbos: {}".format(pos_tags.count('VERB')))
 
+"""
+
 # 8.Hacer una gramática que analice las tres primeras oraciones.
-text = word_tokenize('Alice loves Bob')
+text1 = word_tokenize('de el piso de ladrillos rojos, recien regados, subia un vapor caliente.')
+text2 = word_tokenize('desperté, cubierto de sudor.')
+text3 = word_tokenize('una mariposa de alas grisaceas revoloteaba encandilada alrededor de el foco amarillento.')
+
 grammar = nltk.CFG.fromstring("""
-S -> NP VP
-VP -> V NP
-NP -> 'Alice' | 'Bob'
-V -> 'loves'
+S -> Verb Fc SubordPart FTerm 
+Verb -> 'desperté'
+Fc -> ','
+SubordPart -> PartiMs SpDe 
+PartiMs -> 'cubierto'
+SpDe -> 'de' Sn 
+Sn -> GrupNomMs 
+GrupNomMs -> Nms
+Nms -> 'sudor'
+FTerm -> '.'
+
+S -> SpDe Verb Sn FTerm
+SpDe -> 'de' 'el' 'piso' 'de' 'ladrillos' 'rojos' Fc Sadv PartiFlex Fc
+Sadv -> 'recien'
+PartiFlex -> PartiMp
+PartiMp -> 'regados'
+Verb -> 'subia'
+Sn -> 'un' 'vapor' 'caliente'
+
+
+S -> Sn Verb SubordPart Sadv SpDe FTerm
+Sn -> EspecFs GrupNomFs 'de' 'alas' 'grisaceas'
+EspecFs -> IndefFs
+IndefFs -> 'una'
+GrupNomFs -> NFs
+NFs -> 'mariposa'
+SpDe -> 'de' Sn
+Sn -> GrupNomFp
+GrupNomFp -> NFp SAFp
+NFp -> 'alas'
+SAFp -> AFp
+AFp -> grisaceas
+Verb -> 'revoloteaba'
+SubordPart -> 'encandilada'
+Sadv -> 'alrededor'
+SpDe -> 'de' 'el' 'foco' 'amarillento'
 """)
+
 parser = nltk.ChartParser(grammar)
-trees = parser.parse_all(text)
+trees = parser.parse_all(text1)
+print(len(trees))
 for tree in trees:
     print(tree)
