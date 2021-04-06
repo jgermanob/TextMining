@@ -1,10 +1,7 @@
 from sklearn.feature_extraction.text import CountVectorizer
-from nltk.tokenize import RegexpTokenizer
-from nltk.corpus import stopwords
-import chardet
 import pandas as pd
-
-
+from Tools import get_encoding, get_corpus
+from nltk.corpus import stopwords
 """
 Clase que implementa un sistema de recuperación booleana
 """
@@ -26,7 +23,6 @@ class Boolean_Information_Retrieval:
         words = query.split(' ')
         for word in words:
             if word not in self.boolean_operators and word not in self.group_symbols:
-                print(word)
                 query = query.replace(word, '{}==1'.format(word))
         return query
     
@@ -41,36 +37,11 @@ class Boolean_Information_Retrieval:
         index = df_filtered.index + 1
         return index.tolist()
 
-"""
-Función para obtener la codificación de un archivo
-de texto
-"""
-def get_encoding(path):
-    f = open(path, 'rb').read()
-    result = chardet.detect(f)
-    encoding = result['encoding']
-    return encoding
 
-"""
-Función para obtener una lista con los documentos del corpus
-"""
-tokenizer = RegexpTokenizer(r'\w+')
-def get_corpus(path, corpus_length, tokenizer):
-    corpus = []
-    for index in range(1,corpus_length+1):
-        file_path = path+'{}.txt'.format(index)
-        encoding = get_encoding(file_path)
-        text = open(file_path, 'r', encoding=encoding).read()
-        text = text.lower()
-        tokens = tokenizer.tokenize(text)
-        clean_text = ' '.join(tokens)
-        corpus.append(clean_text.strip())
-    return corpus
-
-
-corpus = get_corpus('./corpus/',15,tokenizer)
+corpus = get_corpus('./corpus/',15)
 info_ret = Boolean_Information_Retrieval(corpus)
 relevant_docs = info_ret.boolean_query('zoofilia and bestialismo')
+print(relevant_docs)
 
 
 
