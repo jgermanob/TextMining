@@ -15,7 +15,7 @@ def get_encoding(path):
 Función para obtener una lista con los documentos del corpus
 """
 def get_corpus(path, corpus_length):
-    tokenizer = RegexpTokenizer(r'\w+')
+    tokenizer = RegexpTokenizer(r'[a-záéíóú]+')
     corpus = []
     for index in range(1,corpus_length+1):
         file_path = path+'{}.txt'.format(index)

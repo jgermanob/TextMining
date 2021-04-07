@@ -1,7 +1,7 @@
 from sklearn.feature_extraction.text import CountVectorizer
-import pandas as pd
-from Tools import get_encoding, get_corpus
 from nltk.corpus import stopwords
+import pandas as pd
+from Tools import get_corpus
 """
 Clase que implementa un sistema de recuperación booleana
 """
@@ -16,14 +16,14 @@ class Boolean_Information_Retrieval:
     """
     Clase que permite ajustar el query solicitado, por ejemplo
     si el query es (zoofilia and bestialismo), el query ajustado será
-    (zoofilia==1 and bestialismo==1) para buscar en el dataframe que 
+    (zoofilia>0 and bestialismo>0) para buscar en el dataframe que 
     contiene la matriz de incidencias
     """
     def adjust_query(self, query):
         words = query.split(' ')
         for word in words:
             if word not in self.boolean_operators and word not in self.group_symbols:
-                query = query.replace(word, '{}==1'.format(word))
+                query = query.replace(word, '{}>0'.format(word))
         return query
     
     """
@@ -40,7 +40,7 @@ class Boolean_Information_Retrieval:
 
 corpus = get_corpus('./corpus/',15)
 info_ret = Boolean_Information_Retrieval(corpus)
-relevant_docs = info_ret.boolean_query('zoofilia and bestialismo')
+relevant_docs = info_ret.boolean_query('not zoofilia')
 print(relevant_docs)
 
 
