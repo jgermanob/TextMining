@@ -104,7 +104,8 @@ relevant_docs = [1, 2, 3, 4, 7, 12, 13, 15]
 
 corpus = get_corpus('./corpus/',15)
 info_ret = InvertedIndex_Information_Retrieval(corpus)
-retrieved_docs = info_ret.boolean_query('( sexualidad or sexo ) and placer')
+query = 'preservativo or ( sexualidad and humana ) or orgasmo or sexo or fecundidad or pelo'
+retrieved_docs = info_ret.boolean_query(query)
 
 prec = precision(relevant_docs, retrieved_docs)
 rec = recall(relevant_docs, retrieved_docs)

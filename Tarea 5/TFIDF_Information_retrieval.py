@@ -1,7 +1,7 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords
 import pandas as pd
-from Tools import get_corpus
+from Tools import get_corpus, precision, recall, f1_score
 from sklearn.metrics.pairwise import cosine_similarity
 
 class TFIDF_Information_Retrieval:
@@ -36,35 +36,44 @@ class TFIDF_Information_Retrieval:
         return invert_index_dict
     
     """
-    Función para obtener el vector de una consulta
-    con base en el modelo tf-idf que se obtuvo de la
-    colección de documentos, devuelve una lista de tuplas
-    de la forma (palabra, valor tf-idf)
+    Función para obtener el vector de una consulta con base en el modelo tf-idf 
+    que se obtuvo de la colección de documentos
     """
     def get_query_vector(self, query):
-        tokens = query.split(' ')
-        query_matrix = self.vectorizer.transform([query])
-        df_query = pd.DataFrame(query_matrix.todense(), columns=self.vectorizer.get_feature_names())
-        values = []
-        for token in tokens:
-            value = df_query[token].values
-            values.append(value[0])
-        vectors = list(zip(tokens,values))
-        return vectors
+        vector = self.vectorizer.transform([query])
+        return vector.todense()
     
-    def tfidf_query(self, query):
+    """
+    Función para obtener los documentos relevantes dada la consulta
+    ingresada con base en la disstancia coseno y un umbral definido 
+    por el usuario
+    """
+    def tfidf_query(self, query, threshold=0.2):
         query_vector = self.get_query_vector(query)
-        for element in query_vector:
-            word, tfidf_value = element
-            posting = self.invertIndex_dict.get(word)
-            for doc in posting:
-                index, tfidf = doc
-                similarity = cosine_similarity(tfidf_value,tfidf)
-                print(similarity)
+        tokens = query.split(' ')
+        retrieved_documents = []
+        for token in tokens:
+            posting = self.invertIndex_dict.get(token)
+            for element in posting:
+                document_index = element[0] - 1
+                if (document_index + 1) not in retrieved_documents:
+                    document_vector = self.df_tfidf.iloc[document_index].values.reshape(1,230)
+                    similarity = cosine_similarity(query_vector,document_vector)[0][0]
+                    if similarity > threshold:
+                        retrieved_documents.append(document_index + 1)
+        return retrieved_documents
 
-        
-
+relevant_docs = [1, 2, 3, 4, 7, 12, 13, 15]
 
 corpus = get_corpus('./corpus/',15)
 info_ret = TFIDF_Information_Retrieval(corpus)
-info_ret.tfidf_query('zoofilia bestialismo sexualidad')
+query = 'sexo animales orgasmo sexualidad humana planificación familiar'
+retrieved_docs = info_ret.tfidf_query(query)
+
+prec = precision(relevant_docs, retrieved_docs)
+rec = recall(relevant_docs, retrieved_docs)
+f1 = f1_score(relevant_docs,retrieved_docs)
+
+print("Precision= {}".format(prec))
+print('Recall = {}'.format(rec))
+print('F1-score = {}'.format(f1))
