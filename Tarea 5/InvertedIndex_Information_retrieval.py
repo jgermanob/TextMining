@@ -1,7 +1,7 @@
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk.corpus import stopwords
 import pandas as pd
-from Tools import get_corpus
+from Tools import get_corpus, precision, recall, f1_score
 
 class InvertedIndex_Information_Retrieval:
     def __init__(self, corpus):
@@ -86,21 +86,30 @@ class InvertedIndex_Information_Retrieval:
                 i = i.replace(')', ' ')
                 i = self.invertIndex_dict.get(i)
                 results_stack.append(i)
-            elif (i=='AND'):
+            elif (i=='and'):
                 a = results_stack.pop()
                 b = results_stack.pop()
                 results_stack.append(self.AND(a,b))
-            elif (i=='OR'):
+            elif (i=='or'):
                 a = results_stack.pop()
                 b = results_stack.pop()
                 results_stack.append(self.OR(a,b))
-            elif (i == 'NOT'):
+            elif (i == 'not'):
                 a = results_stack.pop()
                 results_stack.append(self.NOT(a))
         return results_stack.pop()
 
 
+relevant_docs = [1, 2, 3, 4, 7, 12, 13, 15]
+
 corpus = get_corpus('./corpus/',15)
 info_ret = InvertedIndex_Information_Retrieval(corpus)
-result = info_ret.boolean_query('zoofilia and bestialismo')
-print(result)
+retrieved_docs = info_ret.boolean_query('( sexualidad or sexo ) and placer')
+
+prec = precision(relevant_docs, retrieved_docs)
+rec = recall(relevant_docs, retrieved_docs)
+f1 = f1_score(relevant_docs,retrieved_docs)
+
+print("Precision= {}".format(prec))
+print('Recall = {}'.format(rec))
+print('F1-score = {}'.format(f1))

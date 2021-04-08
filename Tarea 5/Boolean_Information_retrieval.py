@@ -1,7 +1,7 @@
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk.corpus import stopwords
 import pandas as pd
-from Tools import get_corpus
+from Tools import get_corpus, precision, recall, f1_score
 """
 Clase que implementa un sistema de recuperación booleana
 """
@@ -38,10 +38,28 @@ class Boolean_Information_Retrieval:
         return index.tolist()
 
 
+relevant_docs = [1, 2, 3, 4, 7, 12, 13, 15]
+
 corpus = get_corpus('./corpus/',15)
 info_ret = Boolean_Information_Retrieval(corpus)
-relevant_docs = info_ret.boolean_query('not zoofilia')
-print(relevant_docs)
+retrieved_docs = info_ret.boolean_query('sexualidad')
+
+prec = precision(relevant_docs, retrieved_docs)
+rec = recall(relevant_docs, retrieved_docs)
+f1 = f1_score(relevant_docs,retrieved_docs)
+
+print("Precision= {}".format(prec))
+print('Recall = {}'.format(rec))
+print('F1-score = {}'.format(f1))
+
+my_retrieved_docs = [1, 2, 4, 7, 12, 13, 15]
+prec = precision(relevant_docs, my_retrieved_docs)
+rec = recall(relevant_docs, my_retrieved_docs)
+f1 = f1_score(relevant_docs,my_retrieved_docs)
+
+print("Precision= {}".format(prec))
+print('Recall = {}'.format(rec))
+print('F1-score = {}'.format(f1))
 
 
 
