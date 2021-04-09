@@ -70,6 +70,8 @@ info_ret = TFIDF_Information_Retrieval(corpus)
 query = 'sexo animales orgasmo sexualidad humana planificación familiar'
 retrieved_docs = info_ret.tfidf_query(query)
 
+print(retrieved_docs)
+
 prec = precision(relevant_docs, retrieved_docs)
 rec = recall(relevant_docs, retrieved_docs)
 f1 = f1_score(relevant_docs,retrieved_docs)

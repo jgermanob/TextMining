@@ -5,12 +5,13 @@ from Tools import get_corpus, precision, recall, f1_score
 
 class InvertedIndex_Information_Retrieval:
     def __init__(self, corpus):
-        self.vectorizer = CountVectorizer(stop_words=list(stopwords.words('spanish')))
+        self.vectorizer = CountVectorizer(stop_words=list(stopwords.words('spanish')), binary=True)
         boolean_matrix = self.vectorizer.fit_transform(corpus)
         self.df_boolean = pd.DataFrame(boolean_matrix.todense(), columns=self.vectorizer.get_feature_names())
         self.invertIndex_dict = self.get_invert_index()
         self.boolean_operators = ['and', 'or', 'not']
         self.group_symbols = ['(',')']
+        print(len(self.vectorizer.get_feature_names()))
     
     """
     Función para obtener diccionario de indice invertido
@@ -18,7 +19,7 @@ class InvertedIndex_Information_Retrieval:
     def get_invert_index(self):
         invert_index_dict = dict()
         for word in self.vectorizer.get_feature_names():
-            query = '{} > 0'.format(str(word))
+            query = '{} == 1'.format(str(word))
             df_filtered = self.df_boolean.query(query)
             index = df_filtered.index + 1
             invert_index_dict[word] = index.tolist()
@@ -106,6 +107,8 @@ corpus = get_corpus('./corpus/',15)
 info_ret = InvertedIndex_Information_Retrieval(corpus)
 query = 'preservativo or ( sexualidad and humana ) or orgasmo or sexo or fecundidad or pelo'
 retrieved_docs = info_ret.boolean_query(query)
+
+print("Docs: {}".format(retrieved_docs))
 
 prec = precision(relevant_docs, retrieved_docs)
 rec = recall(relevant_docs, retrieved_docs)
