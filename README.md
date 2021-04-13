@@ -14,4 +14,4 @@ A continuación se describen las tareas realizadas en el curso
 
 + Tarea 5: Implementar 3 sistemas de recuperación de información, utilizando: Recuperación booleana, recuperación boolenana e índice invertido, y utilizando TF-IDF; la evaluación de los sistemas se realiza con base en las métricas precision, recall y F-1 score.
 
-+ Tarea 6: Llevar a cabo tareas de exploración de datos y extracción de características para la tarea de clasificación de textos.
++ Tarea 6: Llevar a cabo tareas de exploración de datos y extracción de características para la tarea de clasificación de textos. Adicionalmente entrenar distintos clasificadores utilizando diferentes características de los textos y evaluando con el area bajo la curva (AUC).
